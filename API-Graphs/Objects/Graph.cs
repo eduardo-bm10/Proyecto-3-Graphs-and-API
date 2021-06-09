@@ -12,13 +12,10 @@ namespace API_Graphs.Objects
         public Graph()
         {
             this.id = currentId++;
+            this.nodes = new List<Node>();
+            this.edges = new List<Edge>();
         }
-
-        public Graph(int id)
-        {
-            this.id = id;
-        }
-
+        
         public int Id
         {
             get { return this.id; }

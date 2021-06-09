@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace API_Graphs.Objects
 {
     public class Node
@@ -6,11 +8,12 @@ namespace API_Graphs.Objects
         private int id;
         private int inDegree;
         private int outDegree;
-        private string entity;
+        private JsonResult entity;
 
-        public Node()
+        public Node(int entity)
         {
             this.id = currentId++;
+            this.entity = new JsonResult(entity);
         }
 
         public int Id
