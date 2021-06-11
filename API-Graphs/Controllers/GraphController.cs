@@ -11,6 +11,7 @@ namespace API_Graphs.Controllers
     {
         private ILogger<GraphController> _logger;
         private static List<Graph> graphs = new List<Graph>();
+        private int currentSize = 0;
         public GraphController(ILogger<GraphController> logger)
         {
             _logger = logger; 
@@ -20,10 +21,16 @@ namespace API_Graphs.Controllers
         public JsonResult CreateNewGraph()
         {
             Graph newGraph = new Graph();
-            JsonResult info = new JsonResult(newGraph.Id);
+            this.currentSize++;
             graphs.Add(newGraph);
-
-            return info;
+            if (GraphController.graphs.Count == this.currentSize)
+            {
+                return new JsonResult(newGraph.Id);
+            }
+            else
+            {
+                return new JsonResult(StatusCode(500));
+            }
         }
 
         [HttpGet]
@@ -31,7 +38,7 @@ namespace API_Graphs.Controllers
         {
             if (graphs.Count == 0)
             {
-                Ok(graphs);
+                Ok();
             }
             return graphs;
         }
@@ -53,7 +60,14 @@ namespace API_Graphs.Controllers
         public IActionResult DeleteAllGraphs()
         {
             GraphController.graphs.Clear();
-            return NoContent();
+            if (GraphController.graphs.Count == 0)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return StatusCode(500);
+            }
         }
     }
 }
