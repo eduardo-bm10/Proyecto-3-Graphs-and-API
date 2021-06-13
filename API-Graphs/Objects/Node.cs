@@ -21,5 +21,11 @@ namespace API_Graphs.Objects
             get { return this.id; }
             set { this.id = value; }
         }
+
+        public JsonResult Entity
+        {
+            get { return this.entity; }
+            set { this.entity = value;}
+        }
     }
 }

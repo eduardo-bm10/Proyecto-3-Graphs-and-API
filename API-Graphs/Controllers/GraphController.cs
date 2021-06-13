@@ -6,41 +6,30 @@ using Microsoft.Extensions.Logging;
 namespace API_Graphs.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("graphs")]
     public class GraphController : ControllerBase
     {
         private ILogger<GraphController> _logger;
-        private static List<Graph> graphs = new List<Graph>();
-        private int currentSize = 0;
+        public static List<Graph> graphs = new List<Graph>();
+        private int currentId = 0;
+
         public GraphController(ILogger<GraphController> logger)
         {
             _logger = logger; 
         }
 
         [HttpPost]
-        public JsonResult CreateNewGraph()
+        public IActionResult PostNewGraph()
         {
-            Graph newGraph = new Graph();
-            this.currentSize++;
-            graphs.Add(newGraph);
-            if (GraphController.graphs.Count == this.currentSize)
-            {
-                return new JsonResult(newGraph.Id);
-            }
-            else
-            {
-                return new JsonResult(StatusCode(500));
-            }
+            Graph g = new Graph(this.currentId++);
+            GraphController.graphs.Add(g);
+            return Ok(g.Id);
         }
 
         [HttpGet]
-        public List<Graph> GetAllGraphs()
+        public IActionResult GetAllGraphs()
         {
-            if (graphs.Count == 0)
-            {
-                Ok();
-            }
-            return graphs;
+            return Ok(graphs);
         }
 
         [HttpGet("{id}")]
@@ -68,6 +57,20 @@ namespace API_Graphs.Controllers
             {
                 return StatusCode(500);
             }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteIdGraph(int id)
+        {
+            foreach (Graph g in graphs)
+            {
+                if (g.Id == id)
+                {
+                    graphs.Remove(g);
+                    return NoContent();
+                }
+            }
+            return NotFound();
         }
     }
 }
