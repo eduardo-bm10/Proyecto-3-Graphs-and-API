@@ -4,13 +4,14 @@ namespace API_Graphs.Objects
 {
     public class Graph
     {
+        private int currentId = 0;
         private int id;
-        private List<Node> nodes = new List<Node>();
+        public static List<Node> nodes = new List<Node>();
         private List<Edge> edges = new List<Edge>();
         
-        public Graph(int id)
+        public Graph()
         {
-            this.id = id;
+            this.id = currentId++;
         }
         
         public int Id
@@ -21,8 +22,14 @@ namespace API_Graphs.Objects
 
         public List<Node> Nodes
         {
-            get { return this.nodes; }
-            set { this.nodes = value; }
+            get { return nodes; }
+            set { nodes = value; }
+        }
+
+        public List<Edge> Edges
+        {
+            get { return this.edges; }
+            set {this.edges = value; }
         }
     }
 }

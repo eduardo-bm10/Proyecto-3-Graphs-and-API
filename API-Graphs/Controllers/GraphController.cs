@@ -11,7 +11,6 @@ namespace API_Graphs.Controllers
     {
         private ILogger<GraphController> _logger;
         public static List<Graph> graphs = new List<Graph>();
-        private int currentId = 0;
 
         public GraphController(ILogger<GraphController> logger)
         {
@@ -21,7 +20,7 @@ namespace API_Graphs.Controllers
         [HttpPost]
         public IActionResult PostNewGraph()
         {
-            Graph g = new Graph(this.currentId++);
+            Graph g = new Graph();
             GraphController.graphs.Add(g);
             return Ok(g.Id);
         }
