@@ -16,60 +16,97 @@ namespace API_Graphs.Controllers
             _logger = logger;
         }
 
-        [HttpPost("{entity}")]
-        public IActionResult PostNewNode(int entity)
+        private Graph GetGraph(int id)
         {
-            Node n = new Node(entity);
-            Graph.nodes.Add(n);
-            return Ok(n.Id);
+            foreach (Graph g in GraphController.graphs)
+            {
+                if (g.Id == id)
+                {
+                    return g;
+                }
+            }
+            return null;
+        }
+
+        [HttpPost("{entity}")]
+        public IActionResult PostNewNode(int entity, [FromRoute] int id)
+        {
+            Graph g = this.GetGraph(id);
+            if (g != null)
+            { 
+                Node n = new Node(g.currentNodeId++, entity);
+                g.Nodes.Add(n);
+                return Ok(n.Id);
+            }
+            return NotFound();
         }
 
         [HttpPut("{id1}/{entity}")]
-        public IActionResult PutIdNode(int id1, int entity)
+        public IActionResult PutIdNode([FromRoute] int id, int id1, int entity)
         {
-            foreach (Node n in Graph.nodes)
+            Graph g = this.GetGraph(id);
+            if (g != null)
             {
-                if (n.Id == id1)
+                foreach (Node n in g.Nodes)
                 {
-                    n.Entity = new JsonResult(entity);
-                    return Ok();
+                    if (n.Id == id1)
+                    {
+                        n.Entity = new JsonResult(entity);
+                        return Ok();
+                    }
                 }
+                return StatusCode(500);
             }
-            return StatusCode(500);
+            return NotFound();
         }
 
         [HttpGet]
-        public IActionResult GetAllNodes()
+        public IActionResult GetAllNodes([FromRoute] int id)
         {
-            return Ok(Graph.nodes);
+            Graph g = this.GetGraph(id);
+            if (g != null)
+            {
+                return Ok(g.Nodes);
+            }
+            return NotFound();
         }
 
         [HttpDelete("{id1}")]
-        public IActionResult DeleteIdNode(int id1)
+        public IActionResult DeleteIdNode([FromRoute] int id, int id1)
         {
-            foreach (Node n in Graph.nodes)
+            Graph g = this.GetGraph(id);
+            if (g != null)
             {
-                if (n.Id == id1)
+                foreach (Node n in g.Nodes)
                 {
-                    Graph.nodes.Remove(n);
-                    return Ok();
+                    if (n.Id == id1)
+                    {
+                        g.Nodes.Remove(n);
+                        return Ok();
+                    }
                 }
+                return StatusCode(500);
             }
-            return StatusCode(500);
+            return NotFound();
         }
 
         [HttpDelete]
-        public IActionResult DeleteAllNodes()
+        public IActionResult DeleteAllNodes([FromRoute] int id)
         {
-            Graph.nodes.Clear();
-            if (Graph.nodes.Count == 0)
+            Graph g = this.GetGraph(id);
+            if (g != null)
             {
-                return Ok();
+                g.Nodes.Clear();
+                if (g.Nodes.Count == 0)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return StatusCode(500);
+                }
             }
-            else
-            {
-                return StatusCode(500);
-            }
+            return NotFound();
         }
     }
 }

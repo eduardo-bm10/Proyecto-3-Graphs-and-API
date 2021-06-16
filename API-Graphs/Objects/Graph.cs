@@ -4,9 +4,10 @@ namespace API_Graphs.Objects
 {
     public class Graph
     {
-        private int currentId = 0;
+        private static int currentId = 0; 
+        public int currentNodeId = 0;
         private int id;
-        public static List<Node> nodes = new List<Node>();
+        private List<Node> nodes = new List<Node>();
         private List<Edge> edges = new List<Edge>();
         
         public Graph()
