@@ -6,5 +6,13 @@ namespace API_Graphs.Objects
         private int start;
         private int end;
         private int weight;
+
+        public Edge(int id, int start, int end, int weight)
+        {
+            this.id = id;
+            this.start = start;
+            this.end = end;
+            this.weight = weight; 
+        }
     }
 }
