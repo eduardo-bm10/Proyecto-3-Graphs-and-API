@@ -34,7 +34,7 @@ namespace API_Graphs.Controllers
             Graph g = this.GetGraph(id);
             if (g != null)
             { 
-                Node n = new Node(g.currentNodeId++, entity);
+                Node n = new Node(g.counterIdNode++, entity);
                 g.Nodes.Add(n);
                 return Ok(n.Id);
             }

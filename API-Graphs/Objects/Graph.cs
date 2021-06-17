@@ -5,7 +5,8 @@ namespace API_Graphs.Objects
     public class Graph
     {
         private static int currentId = 0; 
-        public int currentNodeId = 0;
+        public int counterIdNode = 0;
+        public int counterIdEdge = 0;
         private int id;
         private List<Node> nodes = new List<Node>();
         private List<Edge> edges = new List<Edge>();
