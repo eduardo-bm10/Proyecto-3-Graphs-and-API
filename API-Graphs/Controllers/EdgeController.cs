@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using API_Graphs.Objects;
@@ -15,22 +16,10 @@ namespace API_Graphs.Controllers
             _logger = logger;
         }
 
-        private Graph GetGraph(int id)
-        {
-            foreach (Graph g in GraphController.graphs)
-            {
-                if (g.Id == id)
-                {
-                    return g;
-                }
-            }
-            return null;
-        }
-
         [HttpGet]
         public IActionResult GetAllEdges([FromRoute] int id)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 return Ok(g.Edges);
@@ -41,7 +30,7 @@ namespace API_Graphs.Controllers
         [HttpDelete]
         public IActionResult DeleteAllEdges([FromRoute] int id)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 if (g.Edges.Count == 0)
@@ -60,23 +49,38 @@ namespace API_Graphs.Controllers
         [HttpPost]
         public IActionResult PostNewEdge([FromRoute] int id)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
-                Edge e = new Edge();
+                Edge e = new Edge(g.counterIdEdge++, new Random().Next(int.MaxValue), new Random().Next(int.MaxValue), new Random().Next(100));
+                foreach (Node n in g.Nodes)
+                {
+                    if (n.Id == e.Start || n.Id == e.End)
+                    {
+                        g.Edges.Add(e);
+                        return Ok(e.Id);
+                    }
+                }
+                return NotFound();
             }
+            return StatusCode(500);
         }
 
         [HttpPut("{id1}")]
         public IActionResult PutIdEdge([FromRoute] int id, int id1)
         {
+            Graph g = GraphController.GetGraph(id);
+            if (g != null)
+            {
 
+            }
+            return StatusCode(500);
         }
 
         [HttpDelete("{id1}")]
         public IActionResult DeleteIdEdges([FromRoute] int id, int id1)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 foreach (Edge e in g.Edges)

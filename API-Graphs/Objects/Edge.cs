@@ -34,5 +34,41 @@ namespace API_Graphs.Objects
             get { return this.id; }
             set { this.id = value; }
         }
+
+        /// <summary>
+        /// Retorna o establece el id del nodo inicial.
+        /// </summary>
+        /// <returns>
+        /// el valor del id del nodo inicial.
+        /// </returns>
+        public int Start
+        {
+            get { return this.start; }
+            set { this.start = value; }
+        }
+
+        /// <summary>
+        /// Retorna o establece el id del nodo final.
+        /// </summary>
+        /// <returns>
+        /// el valor del id del nodo final.
+        /// </returns>
+        public int End
+        {
+            get { return this.end; }
+            set { this.end = value; }
+        }
+
+        /// <summary>
+        /// Retorna o establece el valor de peso de la arista.
+        /// </summary>
+        /// <returns>
+        /// el valor del peso.
+        /// </returns>
+        public int Weight
+        {
+            get { return this.weight; }
+            set { this.weight = value; }
+        }
     }
 }

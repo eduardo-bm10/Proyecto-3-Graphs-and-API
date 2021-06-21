@@ -16,22 +16,10 @@ namespace API_Graphs.Controllers
             _logger = logger;
         }
 
-        private Graph GetGraph(int id)
-        {
-            foreach (Graph g in GraphController.graphs)
-            {
-                if (g.Id == id)
-                {
-                    return g;
-                }
-            }
-            return null;
-        }
-
         [HttpPost("{entity}")]
         public IActionResult PostNewNode(int entity, [FromRoute] int id)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             { 
                 Node n = new Node(g.counterIdNode++, entity);
@@ -44,7 +32,7 @@ namespace API_Graphs.Controllers
         [HttpPut("{id1}/{entity}")]
         public IActionResult PutIdNode([FromRoute] int id, int id1, int entity)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 foreach (Node n in g.Nodes)
@@ -63,7 +51,7 @@ namespace API_Graphs.Controllers
         [HttpGet]
         public IActionResult GetAllNodes([FromRoute] int id)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 return Ok(g.Nodes);
@@ -74,7 +62,7 @@ namespace API_Graphs.Controllers
         [HttpDelete("{id1}")]
         public IActionResult DeleteIdNode([FromRoute] int id, int id1)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 foreach (Node n in g.Nodes)
@@ -93,7 +81,7 @@ namespace API_Graphs.Controllers
         [HttpDelete]
         public IActionResult DeleteAllNodes([FromRoute] int id)
         {
-            Graph g = this.GetGraph(id);
+            Graph g = GraphController.GetGraph(id);
             if (g != null)
             {
                 g.Nodes.Clear();

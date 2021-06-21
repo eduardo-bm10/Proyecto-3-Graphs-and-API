@@ -17,6 +17,18 @@ namespace API_Graphs.Controllers
             _logger = logger; 
         }
 
+        public static Graph GetGraph(int id)
+        {
+            foreach (Graph g in graphs)
+            {
+                if (g.Id == id)
+                {
+                    return g;
+                }
+            }
+            return null;
+        }
+
         [HttpPost]
         public IActionResult PostNewGraph()
         {
