@@ -106,7 +106,7 @@ namespace API_Graphs.Controllers
             }
             else
             {
-                return StatusCode(500);
+                return StatusCode(500, new JsonResult("Los grafos no lograron eliminarse correctamente"));
             }
         }
 

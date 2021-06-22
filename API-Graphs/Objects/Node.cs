@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Serialization.Json;
+using System.Text.Json;
 
 namespace API_Graphs.Objects
 {
@@ -13,15 +13,15 @@ namespace API_Graphs.Objects
         private int id;
         private int inDegree;
         private int outDegree;
-        private JsonResult entity;
+        private JsonElement entity;
         
         /// <summary>
         /// Constructor de la clase <c>Node</c> que asigna el id y crea un resultado JSON con el valor de la entidad.
         /// </summary>
-        public Node(int id, int entity)
+        public Node(int id, JsonElement entity)
         {
             this.id = id;
-            this.entity = new JsonResult(entity);
+            this.entity = entity;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace API_Graphs.Objects
         /// <returns>
         /// El atributo entity en formato JSON.
         /// </returns>
-        public JsonResult Entity
+        public JsonElement Entity
         {
             get { return this.entity; }
             set { this.entity = value; }

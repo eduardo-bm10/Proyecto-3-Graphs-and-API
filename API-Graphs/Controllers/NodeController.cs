@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using API_Graphs.Objects;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace API_Graphs.Controllers
 {
@@ -23,7 +24,7 @@ namespace API_Graphs.Controllers
             _logger = logger;
         }
 
-        [HttpPost("{entity}")]
+        [HttpPost]
         /// <summary>
         /// Crea un nuevo nodo con la entidad brindada en el grafo indicado por el id en ruta.
         /// </summary>
@@ -31,19 +32,19 @@ namespace API_Graphs.Controllers
         /// Codigo de estado 200 OK con el id del nodo si el grafo indicado existe y se logro crear el nodo.
         /// Codigo de estado 500 InternalServerError si el grafo no fue encontrado.
         /// </returns>
-        public IActionResult PostNewNode(int entity, [FromRoute] int id)
+        public IActionResult PostNewNode([FromRoute] int id, [FromBody] JsonElement data)
         {
             Graph g = GraphController.GetGraph(id);
             if (g != null)
             { 
-                Node n = new Node(g.counterIdNode++, entity);
+                Node n = new Node(g.counterIdNode++, data.GetProperty("entity"));
                 g.Nodes.Add(n);
                 return Ok(n.Id);
             }
-            return StatusCode(500);
+            return StatusCode(500, new JsonResult("El grafo especificado en ruta no existe."));
         }
 
-        [HttpPut("{id1}/{entity}")]
+        [HttpPut("{id1}")]
         /// <summary>
         /// Actualiza el nodo indicado por id1 y le asigna una nueva entidad.
         /// </summary>
@@ -52,7 +53,7 @@ namespace API_Graphs.Controllers
         /// Codigo de estado 404 NotFound si el nodo buscado no existe en dicho grafo.
         /// Codigo de estado 500 InternalServerError si el grafo no existe. 
         /// </returns>
-        public IActionResult PutIdNode([FromRoute] int id, int id1, int entity)
+        public IActionResult PutIdNode([FromRoute] int id, int id1, [FromBody] JsonElement data)
         {
             Graph g = GraphController.GetGraph(id);
             if (g != null)
@@ -61,13 +62,13 @@ namespace API_Graphs.Controllers
                 {
                     if (n.Id == id1)
                     {
-                        n.Entity = new JsonResult(entity);
+                        n.Entity = data.GetProperty("entity");
                         return Ok();
                     }
                 }
                 return NotFound();
             }
-            return StatusCode(500);
+            return StatusCode(500, new JsonResult("El grafo especificado en ruta no existe."));
         }
 
         [HttpGet]
@@ -76,7 +77,7 @@ namespace API_Graphs.Controllers
         /// </summary>
         /// <returns>
         /// Codigo de estado 200 OK con la lista de nodos si el grafo existe.
-        /// Codigo de estado 404 NotFound si el grafo no existe.
+        /// Codigo de estado 500 InternalServerError si el grafo no existe.
         /// </returns>
         public IActionResult GetAllNodes([FromRoute] int id)
         {
@@ -85,7 +86,7 @@ namespace API_Graphs.Controllers
             {
                 return Ok(g.Nodes);
             }
-            return NotFound();
+            return StatusCode(500, new JsonResult("El grafo especificado en ruta no existe."));
         }
 
         [HttpDelete("{id1}")]
@@ -112,7 +113,7 @@ namespace API_Graphs.Controllers
                 }
                 return NotFound();
             }
-            return StatusCode(500);
+            return StatusCode(500, new JsonResult("El grafo especificado en ruta no existe."));
         }
 
         [HttpDelete]
@@ -135,10 +136,10 @@ namespace API_Graphs.Controllers
                 }
                 else
                 {
-                    return StatusCode(500);
+                    return StatusCode(500, new JsonResult("Los nodos no se eliminaron correctamente."));
                 }
             }
-            return StatusCode(500);
+            return StatusCode(500, new JsonResult("El grafo especificado en ruta no existe."));
         }
     }
 }
