@@ -16,7 +16,7 @@ namespace API_Graphs.Methods
         [HttpGet]
         public IActionResult GetDegree([FromRoute] int id)
         {
-            
+            return Ok();
         }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Serialization.Json;
 
 namespace API_Graphs.Objects
 {
@@ -13,7 +14,7 @@ namespace API_Graphs.Objects
         private int inDegree;
         private int outDegree;
         private JsonResult entity;
-
+        
         /// <summary>
         /// Constructor de la clase <c>Node</c> que asigna el id y crea un resultado JSON con el valor de la entidad.
         /// </summary>
@@ -36,6 +37,30 @@ namespace API_Graphs.Objects
         }
 
         /// <summary>
+        /// El metodo <c>OutDegree</c> permite acceder al grado saliente.
+        /// </summary>
+        /// <returns>
+        /// El grado saliente del nodo.
+        /// </returns>
+        public int OutDegree
+        {
+            get { return this.outDegree; }
+            set { this.outDegree = value; }
+        }
+
+        /// <summary>
+        /// El metodo <c>InDegree</c> permite acceder al grado entrante.
+        /// </summary>
+        /// <returns>
+        /// El grado entrante del nodo.
+        /// </returns>
+        public int InDegree
+        {
+            get { return this.inDegree; }
+            set { this.inDegree = value; }
+        }
+
+        /// <summary>
         /// El metodo <c>Entity</c> permite acceder a la entidad almacenada en el nodo.
         /// </summary>
         /// <returns>
@@ -44,7 +69,7 @@ namespace API_Graphs.Objects
         public JsonResult Entity
         {
             get { return this.entity; }
-            set { this.entity = value;}
+            set { this.entity = value; }
         }
     }
 }

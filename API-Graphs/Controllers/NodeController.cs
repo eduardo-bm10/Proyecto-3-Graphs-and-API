@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using API_Graphs.Objects;
 using Microsoft.Extensions.Logging;
@@ -7,16 +6,31 @@ namespace API_Graphs.Controllers
 {
     [ApiController]
     [Route("graphs/{id}/nodes")]
+    /// <summary>
+    /// La clase NodeController permite crear, eliminar, y modificar nodos contenidos en un determinado grafo.
+    /// </summary>
+    /// Ver <see cref="Node"/> para ver la clase Nodo.
     public class NodeController : ControllerBase
     {
         private ILogger<NodeController> _logger;
         
+        /// <summary>
+        /// El constructor de la clase NodeController.
+        /// Asigna una instancia de tipo ILogger.
+        /// </summary>
         public NodeController(ILogger<NodeController> logger)
         {
             _logger = logger;
         }
 
         [HttpPost("{entity}")]
+        /// <summary>
+        /// Crea un nuevo nodo con la entidad brindada en el grafo indicado por el id en ruta.
+        /// </summary>
+        /// <returns>
+        /// Codigo de estado 200 OK con el id del nodo si el grafo indicado existe y se logro crear el nodo.
+        /// Codigo de estado 500 InternalServerError si el grafo no fue encontrado.
+        /// </returns>
         public IActionResult PostNewNode(int entity, [FromRoute] int id)
         {
             Graph g = GraphController.GetGraph(id);
@@ -26,10 +40,18 @@ namespace API_Graphs.Controllers
                 g.Nodes.Add(n);
                 return Ok(n.Id);
             }
-            return NotFound();
+            return StatusCode(500);
         }
 
         [HttpPut("{id1}/{entity}")]
+        /// <summary>
+        /// Actualiza el nodo indicado por id1 y le asigna una nueva entidad.
+        /// </summary>
+        /// <returns>
+        /// Codigo de estado 200 OK si tanto el grafo como el nodo fueron encontrados.
+        /// Codigo de estado 404 NotFound si el nodo buscado no existe en dicho grafo.
+        /// Codigo de estado 500 InternalServerError si el grafo no existe. 
+        /// </returns>
         public IActionResult PutIdNode([FromRoute] int id, int id1, int entity)
         {
             Graph g = GraphController.GetGraph(id);
@@ -43,12 +65,19 @@ namespace API_Graphs.Controllers
                         return Ok();
                     }
                 }
-                return StatusCode(500);
+                return NotFound();
             }
-            return NotFound();
+            return StatusCode(500);
         }
 
         [HttpGet]
+        /// <summary>
+        /// Obtiene todos los nodos en el grafo indicado por id.
+        /// </summary>
+        /// <returns>
+        /// Codigo de estado 200 OK con la lista de nodos si el grafo existe.
+        /// Codigo de estado 404 NotFound si el grafo no existe.
+        /// </returns>
         public IActionResult GetAllNodes([FromRoute] int id)
         {
             Graph g = GraphController.GetGraph(id);
@@ -60,6 +89,14 @@ namespace API_Graphs.Controllers
         }
 
         [HttpDelete("{id1}")]
+        /// <summary>
+        /// Elimina el nodo indicado por el id1 en el grafo indicado por el id.
+        /// </summary>
+        /// <returns>
+        /// Codigo de estado 200 OK si se encontro el grafo y el nodo indicados, y se logro eliminar el nodo.
+        /// Codigo de estado 404 NotFound si el nodo no existe.
+        /// Codigo de estado 500 InternalServerError si el grafo no fue existe.
+        /// </returns>
         public IActionResult DeleteIdNode([FromRoute] int id, int id1)
         {
             Graph g = GraphController.GetGraph(id);
@@ -73,12 +110,19 @@ namespace API_Graphs.Controllers
                         return Ok();
                     }
                 }
-                return StatusCode(500);
+                return NotFound();
             }
-            return NotFound();
+            return StatusCode(500);
         }
 
         [HttpDelete]
+        /// <summary>
+        /// Elimina todos los nodos en el grafo indicado por id.
+        /// </summary>
+        /// <returns>
+        /// Codigo de estado 200 OK si se logro eliminar todos los nodos del grafo.
+        /// Codigo de estado 500 InternalServerError si los nodos no se eliminaron o si el grafo no existe.
+        /// </returns>
         public IActionResult DeleteAllNodes([FromRoute] int id)
         {
             Graph g = GraphController.GetGraph(id);
@@ -94,7 +138,7 @@ namespace API_Graphs.Controllers
                     return StatusCode(500);
                 }
             }
-            return NotFound();
+            return StatusCode(500);
         }
     }
 }
