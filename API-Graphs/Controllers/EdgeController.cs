@@ -41,6 +41,8 @@ namespace API_Graphs.Controllers
                     {
                         if (n2.Id == end)
                         {
+                            n1.OutDegree++;
+                            n2.InDegree++;
                             return true;
                         }                        
                     }
