@@ -14,6 +14,8 @@ namespace API_Graphs.Objects
         private int inDegree;
         private int outDegree;
         private JsonElement entity;
+        public int vertexWeight = int.MaxValue;
+        public Node previousVertex = null;
         
         /// <summary>
         /// Constructor de la clase <c>Node</c> que asigna el id y crea un resultado JSON con el valor de la entidad.

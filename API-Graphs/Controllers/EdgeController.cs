@@ -31,7 +31,7 @@ namespace API_Graphs.Controllers
         /// Verdadero si ambos nodos para los valores start y end existen.
         /// Falso si no existe al menos uno de los dos nodos. 
         /// </returns>
-        public bool VerifyNodes(Graph g, int start, int end)
+        public static bool VerifyNodes(Graph g, int start, int end)
         {
             foreach (Node n1 in g.Nodes)
             {
@@ -109,7 +109,7 @@ namespace API_Graphs.Controllers
         public IActionResult PostNewEdge([FromRoute] int id, [FromBody] JsonElement data)
         {
             Graph g = GraphController.GetGraph(id);
-            if (!(this.VerifyNodes(g, data.GetProperty("startNode").GetInt32(), data.GetProperty("endNode").GetInt32())))
+            if (!(VerifyNodes(g, data.GetProperty("startNode").GetInt32(), data.GetProperty("endNode").GetInt32())))
             {
                 return StatusCode(500, new JsonResult("No existen los nodos inicial y final especificados."));
             }
@@ -132,7 +132,7 @@ namespace API_Graphs.Controllers
         public IActionResult PutIdEdge([FromRoute] int id, int id1, [FromBody] JsonElement data)
         {
             Graph g = GraphController.GetGraph(id);
-            if (!(this.VerifyNodes(g, data.GetProperty("startNode").GetInt32(), data.GetProperty("endNode").GetInt32())))
+            if (!(VerifyNodes(g, data.GetProperty("startNode").GetInt32(), data.GetProperty("endNode").GetInt32())))
             {
                 return StatusCode(500, new JsonResult("Los nodos indicados como inicial y final no existen"));
             }
