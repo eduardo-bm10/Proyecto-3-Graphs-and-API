@@ -29,17 +29,17 @@ namespace API_Graphs.Methods
         /// </returns>
         private List<Node> DescBubbleSort(List<Node> list)
         {
-            int prom1;
-            int prom2;
+            int sum1;
+            int sum2;
             Node tmp;
             int size = list.Count;
             while (size > 0)
             {
                 for (int i = 0; i < size - 1; i++)
                 {
-                    prom1 = (list[i].InDegree + list[i].OutDegree)/2;
-                    prom2 = (list[i+1].InDegree + list[i+1].OutDegree)/2;
-                    if (prom1 < prom2)
+                    sum1 = list[i].InDegree + list[i].OutDegree;
+                    sum2 = list[i+1].InDegree + list[i+1].OutDegree;
+                    if (sum1 < sum2)
                     {
                         tmp = list[i];
                         list[i] = list[i+1];
@@ -59,17 +59,17 @@ namespace API_Graphs.Methods
         /// </returns>
         private List<Node> AscBubbleSort(List<Node> list)
         {
-            double prom1;
-            double prom2;
+            int sum1;
+            int sum2;
             Node tmp;
             int size = list.Count;
             while (size > 0)
             {
                 for (int i = 0; i < size - 1; i++)
                 {
-                    prom1 = (list[i].InDegree + list[i].OutDegree)/2;
-                    prom2 = (list[i+1].InDegree + list[i+1].OutDegree)/2;
-                    if (prom1 > prom2)
+                    sum1 = list[i].InDegree + list[i].OutDegree;
+                    sum2 = list[i+1].InDegree + list[i+1].OutDegree;
+                    if (sum1 > sum2)
                     {
                         tmp = list[i];
                         list[i] = list[i+1];
