@@ -30,22 +30,19 @@ namespace API_Graphs
         /// </returns>
         private Node GetShortestDistance(List<Node> list)
         {
-            int size = list.Count;
-            Node tmp;
-            while (size > 0)
+            Node result = list[0];
+            for (int i = 0; i < list.Count - 1; i++)
             {
-                for (int i = 0; i < size - 1; i++)
+                if (list[i].vertexWeight < list[i+1].vertexWeight)
                 {
-                    if (list[i].vertexWeight > list[i+1].vertexWeight)
-                    {
-                        tmp = list[i];
-                        list[i] = list[i+1];
-                        list[i+1] = tmp;
-                    }
+                    result = list[i];
                 }
-                size--;
+                else
+                {
+                    result = list[i+1];
+                }
             }
-            return list[0];
+            return result;
         }
 
         /// <summary>
@@ -95,11 +92,11 @@ namespace API_Graphs
                                 }
                             }
                         }
+                        current = this.GetShortestDistance(ady);
+                        ady.Clear();
+                        result.Distance += current.vertexWeight;
+                        result.Path.Add(current);
                     }
-                    current = this.GetShortestDistance(ady);
-                    result.Distance += current.vertexWeight;
-                    result.Path.Add(current);
-                    ady.Clear();
                 }
                 return NotFound();
             }
