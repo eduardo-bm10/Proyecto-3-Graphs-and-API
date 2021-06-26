@@ -1,0 +1,220 @@
+<!-- SIGMA IMPORTS -->
+<script src="src/sigma.core.js"></script>
+<script src="src/conrad.js"></script>
+<script src="src/utils/sigma.utils.js"></script>
+<script src="src/utils/sigma.polyfills.js"></script>
+<script src="src/sigma.settings.js"></script>
+<script src="src/classes/sigma.classes.dispatcher.js"></script>
+<script src="src/classes/sigma.classes.configurable.js"></script>
+<script src="src/classes/sigma.classes.graph.js"></script>
+<script src="src/classes/sigma.classes.camera.js"></script>
+<script src="src/classes/sigma.classes.quad.js"></script>
+<script src="src/classes/sigma.classes.edgequad.js"></script>
+<script src="src/captors/sigma.captors.mouse.js"></script>
+<script src="src/captors/sigma.captors.touch.js"></script>
+<script src="src/renderers/sigma.renderers.canvas.js"></script>
+<script src="src/renderers/sigma.renderers.webgl.js"></script>
+<script src="src/renderers/sigma.renderers.svg.js"></script>
+<script src="src/renderers/sigma.renderers.def.js"></script>
+<script src="src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+<script src="src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+<script src="src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+<script src="src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+<script src="src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+<script src="src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+<script src="src/renderers/svg/sigma.svg.utils.js"></script>
+<script src="src/renderers/svg/sigma.svg.nodes.def.js"></script>
+<script src="src/renderers/svg/sigma.svg.edges.def.js"></script>
+<script src="src/renderers/svg/sigma.svg.edges.curve.js"></script>
+<script src="src/renderers/svg/sigma.svg.labels.def.js"></script>
+<script src="src/renderers/svg/sigma.svg.hovers.def.js"></script>
+<script src="src/middlewares/sigma.middlewares.rescale.js"></script>
+<script src="src/middlewares/sigma.middlewares.copy.js"></script>
+<script src="src/misc/sigma.misc.animation.js"></script>
+<script src="src/misc/sigma.misc.bindEvents.js"></script>
+<script src="src/misc/sigma.misc.bindDOMEvents.js"></script>
+<script src="src/misc/sigma.misc.drawHovers.js"></script>
+<!-- SIGMA IMPORTS -->
+
+<!-- jquery -->
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script> -->
+<!-- Papa parse and jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="papaparse.min.js"></script>
+
+<div id="container">
+
+  <h3>Ingrese el archivo csv</h3>
+  <style>
+    #graph-container {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+    .thumb {
+      height: 75px;
+      border: 1px solid #000;
+      margin: 10px 5px 0 0;
+    }
+    
+  </style>
+
+  <form class="form-inline">
+
+	  <div class="form-group">
+		  <label for="files">Upload a CSV formatted file:</label>
+		  <input type="file" id="files" class="form-control" accept=".csv" required />
+	  </div>
+
+	  <div class="form-group">
+		  <button type="submit" id="submit-file" class="btn btn-primary">Upload File</button>
+	  </div>
+	
+  </form>
+  
+  <input type="file" id="files" name="file" />
+  <button onclick="abortRead();">Cancel read</button>
+  <div id="progress_bar"><div class="percent">0%</div></div>
+
+  <div id="graph-container"></div>
+
+</div>
+
+<script>
+
+  $('#submit-file').on("click",function(e){
+	  e.preventDefault();
+	  $('#files').parse({
+		  config: {
+			  delimiter: "auto",
+			  complete: displayHTMLTable,
+		  },
+		  before: function(file, inputElem)
+		  {
+			  //console.log("Parsing file...", file);
+		  },
+		  error: function(err, file)
+		  {
+			  //console.log("ERROR:", err, file);
+		  },
+		  complete: function()
+		  {
+  			//console.log("Done with all files");
+		  }
+	  });
+  });
+
+  function displayHTMLTable(results) {
+    var table = "<table class='table'>";
+    var data = results.data;
+
+    for (i = 0; i < data.length; i++) {
+        table += "<tr>";
+        var row = data[i];
+        var cells = row.join(",").split(",");
+
+        for (j = 0; j < cells.length; j++) {
+            table += "< td > ";
+            table += cells[j];
+            table += "</th>";
+        }
+        table += "</tr>";
+    }
+    table += "</table>";
+
+    $("#parsed_csv_list").html(table);
+  }
+
+  var reader;
+  var progress = document.querySelector('.percent');
+
+  function abortRead() {
+    reader.abort();
+  }
+
+  function errorHandler(evt) {
+    switch(evt.target.error.code) {
+      case evt.target.error.NOT_FOUND_ERR:
+        alert('File Not Found!');
+        break;
+      case evt.target.error.NOT_READABLE_ERR:
+        alert('File is not readable');
+        break;
+      case evt.target.error.ABORT_ERR:
+        break; // noop
+      default:
+        alert('An error occurred reading this file.');
+    };
+  }
+
+  function updateProgress(evt) {
+    // evt is an ProgressEvent.
+    if (evt.lengthComputable) {
+      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+      // Increase the progress bar length.
+      if (percentLoaded < 100) {
+        progress.style.width = percentLoaded + '%';
+        progress.textContent = percentLoaded + '%';
+      }
+    }
+  }
+
+  function handleFileSelect(evt) {
+    // Reset progress indicator on new file selection.
+    progress.style.width = '0%';
+    progress.textContent = '0%';
+
+    reader = new FileReader();
+    reader.onerror = errorHandler;
+    reader.onprogress = updateProgress;
+    reader.onabort = function(e) {
+      alert('File read cancelled');
+    };
+    reader.onloadstart = function(e) {
+      document.getElementById('progress_bar').className = 'loading';
+    };
+    reader.onload = function(e) {
+      // Ensure that the progress bar displays 100% at the end.
+      progress.style.width = '100%';
+      progress.textContent = '100%';
+      setTimeout("document.getElementById('progress_bar').className='';", 2000);
+    }
+
+    // Read in the image file as a binary string.
+    reader.readAsBinaryString(evt.target.files[0]);
+  }
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+
+
+
+
+/* $( document ).ready(function() {
+
+$.ajax({
+    url: 'https://',
+    type: 'GET',
+    success: function(respuesta) {
+        console.log(respuesta.name);
+    },
+    error: function() {
+        console.error("No es posible completar la operación");
+    }
+});
+
+}); */
+</script>

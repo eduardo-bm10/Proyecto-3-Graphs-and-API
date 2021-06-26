@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>graphs</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
+        <script src="../node_modules/papaparse/papaparse.min.js"></script>
+        
+        <!-- SIGMA IMPORTS -->
+        <script src="src/sigma.core.js"></script>
+        <script src="src/conrad.js"></script>
+        <script src="src/utils/sigma.utils.js"></script>
+        <script src="src/utils/sigma.polyfills.js"></script>
+        <script src="src/sigma.settings.js"></script>
+        <script src="src/classes/sigma.classes.dispatcher.js"></script>
+        <script src="src/classes/sigma.classes.configurable.js"></script>
+        <script src="src/classes/sigma.classes.graph.js"></script>
+        <script src="src/classes/sigma.classes.camera.js"></script>
+        <script src="src/classes/sigma.classes.quad.js"></script>
+        <script src="src/classes/sigma.classes.edgequad.js"></script>
+        <script src="src/captors/sigma.captors.mouse.js"></script>
+        <script src="src/captors/sigma.captors.touch.js"></script>
+        <script src="src/renderers/sigma.renderers.canvas.js"></script>
+        <script src="src/renderers/sigma.renderers.webgl.js"></script>
+        <script src="src/renderers/sigma.renderers.svg.js"></script>
+        <script src="src/renderers/sigma.renderers.def.js"></script>
+        <script src="src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+        <script src="src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+        <script src="src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+        <script src="src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+        <script src="src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+        <script src="src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+        <script src="src/renderers/svg/sigma.svg.utils.js"></script>
+        <script src="src/renderers/svg/sigma.svg.nodes.def.js"></script>
+        <script src="src/renderers/svg/sigma.svg.edges.def.js"></script>
+        <script src="src/renderers/svg/sigma.svg.edges.curve.js"></script>
+        <script src="src/renderers/svg/sigma.svg.labels.def.js"></script>
+        <script src="src/renderers/svg/sigma.svg.hovers.def.js"></script>
+        <script src="src/middlewares/sigma.middlewares.rescale.js"></script>
+        <script src="src/middlewares/sigma.middlewares.copy.js"></script>
+        <script src="src/misc/sigma.misc.animation.js"></script>
+        <script src="src/misc/sigma.misc.bindEvents.js"></script>
+        <script src="src/misc/sigma.misc.bindDOMEvents.js"></script>
+        <script src="src/misc/sigma.misc.drawHovers.js"></script>
+        <!-- SIGMA IMPORTS -->
+
+    </head>
+    <body>
+
+        <h1>Graph visualizer</h1>
+        
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="files">Upload a CSV formatted file:</label>
+                <input type="file" id="files" class="form-control" accept=".csv" required />
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="displayHTMLTable()">Upload File</button>
+            </div>
+        </form>
+
+        <div id="container">
+            <style>
+              #graph-container {
+                top: 10px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                position: absolute;
+              }
+            </style>
+            <div id="graph-container"></div>
+          </div>
+
+        <script>
+
+            // Variables
+            var i, s, N = 100, E = 500, g = { nodes: [], edges: [] }, datos;
+        
+            function displayHTMLTable(results) {
+                var table = "<table class='table'>";
+                var data = results.data;
+
+                for (i = 0; i < data.length; i++) {
+
+                    table += "<tr>";
+                    var row = data[i];
+                    var cells = row.join(",").split(",");
+                    
+                    g.nodes.push({
+                        id: 'n' + i,
+                        label: 'Node ' + i,
+                        x: data[i < 3],
+                        y: data[i < 3],
+                        size: data[3],
+                        color: '#666'
+                    });
+
+                    for (j = 0; j < cells.length; j++) {
+                        table += "< td > ";
+                        table += cells[j];
+                        table += "</th>";
+
+                        g.edges.push({ 
+                            id: 'e' + i,
+                            source: 'n' + (Math.random() * N | 0),
+                            target: 'n' + (Math.random() * N | 0),
+                            size: Math.random(),
+                            color: '#ccc'
+                        });
+
+                    }
+                    table += "</tr>";
+                }
+                table += "</table>";
+                $("#parsed_csv_list").html(table);
+                datos = table;
+            }
+
+
+            $('#submit-file').on("click",function(e){
+	            e.preventDefault();
+	            $('#files').parse({
+		            config: {
+			            delimiter: "auto",
+			            complete: displayHTMLTable,
+		            },
+		            before: function(file, inputElem)
+		            {
+			            console.log("Parsing file...", file);
+		            },
+		            error: function(err, file)
+		            {
+			            console.log("ERROR:", err, file);
+		            },
+		            complete: function()
+		            {
+			            console.log("Done with all files");
+		            }
+	            });
+            });
+
+            // Se instancia el grafo con sigma
+            s = new sigma({
+                graph: g,
+                container: 'graph-container'
+            });
+
+</script>
+
+</body>
+</html>
