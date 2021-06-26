@@ -6,7 +6,7 @@ namespace API_Graphs.Controllers
 {
     [ApiController]
     [Route("graphs/{id}/edges")]
-    public class EdgeController
+    public class EdgeController : ControllerBase
     {
         private ILogger<EdgeController> _logger;
 
